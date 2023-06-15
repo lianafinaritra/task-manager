@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/.idea
 /.pnp
 .pnp.js
 
@@ -21,6 +22,7 @@
 
 # debug
 npm-debug.log*
+yarn.lock
 yarn-debug.log*
 yarn-error.log*
 
