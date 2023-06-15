@@ -1,7 +1,6 @@
 import {create} from "zustand";
-import {set} from "zod";
 
-type Task = {
+export type Task = {
   id: string;
   title: string;
 }
@@ -49,6 +48,7 @@ const useTaskManager = () => {
     const newTab: Task[] = tasks.filter(item => item.title !== taskParam.title);
     setTasks(newTab);
   }
+ return {useUpdate, useTaskStore, useCreate, useDelete, useSearch};
 }
 
 export {
