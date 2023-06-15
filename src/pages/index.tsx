@@ -1,5 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
+import {GetServerSideProps, InferGetServerSidePropsType} from "next";
+import {date} from "zod";
 
 /**
   Calculates the time difference between the server time and client time.
@@ -7,14 +9,23 @@ import { useRouter } from "next/router";
   @param {Date} clientTime - The client time.
   @returns {string} The time difference in the format "{days} days, {hours} hours, {minutes} minutes, {seconds} seconds".
 */
-const calculateTimeDifference = (server: Date, client: Date) => {};
+const calculateTimeDifference = (server: Date, client: Date) => {
+  const difference = server.getTime() - client.getTime()/1000;
+  return difference;
+};
 
+export const getServerSideProps: () => Promise<{ props: { Server: number } }> = async () => {
+  const Server = Date.now();
+  return { props: { Server } }
+}
 
-export default function Home() {
+export default function Home({ Server,}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const moveToTaskManager = () => {
     router.push("/tasks");
   }
+  const Client = Date.now();
+
   return (
     <>
       <Head>
@@ -29,13 +40,13 @@ export default function Home() {
           {/* Display here the server time (DD-MM-AAAA HH:mm)*/}
           <p>
             Server time:{" "}
-            <span className="serverTime">{/* Replace with the value */}</span>
+            <span className="serverTime">{Server}</span>
           </p>
 
           {/* Display here the time difference between the server side and the client side */}
           <p>
             Time diff:{" "}
-            <span className="serverTime">{/* Replace with the value */}</span>
+            <span className="serverTime">{Client}</span>
           </p>
         </div>
 
