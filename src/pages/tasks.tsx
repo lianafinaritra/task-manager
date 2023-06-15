@@ -1,4 +1,6 @@
-import React, { ChangeEvent, useRef } from 'react';
+import React, {ChangeEvent, useEffect, useRef, useState} from 'react';
+import {useTaskManager, useTaskStore} from "@/store/useTaskManager";
+import {useLocalStorage} from "@/hooks/useLocalStorage";
 
 interface Task {
   id: number,
@@ -7,68 +9,75 @@ interface Task {
 }
 
 const TaskManager = () => {
-  // const createTaskRef = ...:
-  // const {
-  //   tasks,
-  //   searchTask,
-  //   addTask,
-  //   updateTask,
-  //   deleteTask,
-  //   setSearchTask,
-  // } = useTaskManager();
+  const [newTitle, setNewTitle] = useState('');
+  const {useSetValue, useCheckValue} = useLocalStorage();
+  const {
+     useUpdate,
+     useCreate,
+      useDelete,
+      useSearch
+   } = useTaskManager();
+  const {tasks, currentTask} = useTaskStore();
 
-  const handleAddTask = () => {
-    const title = ""; // Replace with the value in the createTaskRef 
+  function HandleAddTask() {
     const newTask = {
       id: Date.now(),
-      title,
+      title: newTitle,
       completed: false,
     };
-    // addTask(newTask);
+    useCreate(newTask);
+    setNewTitle('');
+    useSetValue();
   };
 
-  const handleUpdateTask = (taskId: number, updatedTask: Task) => {
-    // updateTask(taskId, updatedTask);
+  function HandleUpdateTask (taskId: number, newTitle: string){
+    useUpdate(taskId, newTitle);
+      useSetValue();
   };
 
-  const handleDeleteTask = (taskId: number) => {
-    // deleteTask(taskId);
+  function HandleDeleteTask(taskId: number) {
+    useDelete(taskId);
+      useSetValue();
   };
 
-  const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
-    // setSearchTask(e.target.value);
+  function HandleSearch (e: ChangeEvent<HTMLInputElement>){
+    useSearch(e.target.value);
   };
 
-  // See! I already give you everything!
-  // const filteredTasks = tasks.filter((task) =>
-  //   task.title.toLowerCase().includes(searchTask.toLowerCase())
-  // );
+  /*const filteredTasks = tasks.filter((task) =>
+  task.title.toLowerCase().includes(c.toLowerCase())
+  );*/
+
+    useEffect(() => {
+        function GetTasks(){
+            useCheckValue();
+        }
+        GetTasks();
+    }, [])
 
   return (
     <div>
       <h1>Task Manager</h1>
 
-      <input type="text" /*ref={}*//>
+      <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)}/>
 
-      <button onClick={handleAddTask}>Add Task</button>
+      <button onClick={HandleAddTask}>Add Task</button>
 
-      <input type="text" onChange={handleSearch} placeholder="Search Task" />
+      <input type="text" onChange={HandleSearch} placeholder="Search Task" />
 
       <ul>
-        {/* 
-        {filteredTasks.map((task) => (
+        {tasks.map((task) => (
           <li key={task.id}>
             <input
               type="text"
               value={task.title}
               onChange={(e) =>
-                handleUpdateTask(task.id, { title: e.target.value })
+                HandleUpdateTask(task.id, e.target.value )
               }
             />
-            <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+            <button onClick={() => HandleDeleteTask(task.id)}>Delete</button>
           </li>
         ))}
-        */}
       </ul>
     </div>
   );
