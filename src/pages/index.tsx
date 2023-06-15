@@ -10,12 +10,12 @@ import {date} from "zod";
   @returns {string} The time difference in the format "{days} days, {hours} hours, {minutes} minutes, {seconds} seconds".
 */
 const calculateTimeDifference = (server: Date, client: Date) => {
-  const difference = server.getTime() - client.getTime()/1000;
+  const difference = (server.getTime() - client.getTime())/1000;
   return difference;
 };
 
-export const getServerSideProps: () => Promise<{ props: { Server: number } }> = async () => {
-  const Server = Date.now();
+export const getServerSideProps: () => Promise<{ props: { Server: string } }> = async () => {
+  const Server = new Date().toISOString();
   return { props: { Server } }
 }
 
@@ -24,7 +24,10 @@ export default function Home({ Server,}: InferGetServerSidePropsType<typeof getS
   const moveToTaskManager = () => {
     router.push("/tasks");
   }
-  const Client = Date.now();
+  const ClientTime = new Date();
+  const ServerTime = new Date(Server);
+  const time = `${ServerTime.getDate()}-${ServerTime.getMonth()}-${ServerTime.getFullYear()} ${ServerTime.getHours()}:${ServerTime.getMinutes()}`;
+  const differenceTime = calculateTimeDifference(ClientTime, ServerTime);
 
   return (
     <>
@@ -39,14 +42,12 @@ export default function Home({ Server,}: InferGetServerSidePropsType<typeof getS
         <div>
           {/* Display here the server time (DD-MM-AAAA HH:mm)*/}
           <p>
-            Server time:{" "}
-            <span className="serverTime">{Server}</span>
+            Server time: {time}
           </p>
 
           {/* Display here the time difference between the server side and the client side */}
           <p>
-            Time diff:{" "}
-            <span className="serverTime">{Client}</span>
+            Time diff:  {differenceTime.toString()} s
           </p>
         </div>
 
